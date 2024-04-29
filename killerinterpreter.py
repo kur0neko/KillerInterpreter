@@ -3,11 +3,10 @@ import tokenize
 import os
 import io
 import ast
-import subprocess
 import os
 from tokenizer import Tokenizers
 
-#The ast module helps Python applications to process trees of the Python abstract syntax grammar. 
+#The ast module helps Python applications to process trees of the Python abstract syntax grammar.
 
 class Lexer:
     def tokenize_code(self, code):
@@ -78,7 +77,6 @@ class MemoryStack:
         else:
             raise IndexError("Memory stack is empty")
 
-        
 class PythonInterpreter:
     def __init__(self, filepath):
         self.filepath = filepath
@@ -121,42 +119,39 @@ class PythonInterpreter:
                 print("\nCode executed successfully.")
             except Exception as e:
                 print(f"Execution error: {e}")
-    
-                
+
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python interpreter.py <path_to_python_file>")
         sys.exit(1)
-    
+
     filepath = sys.argv[1]
     if not os.path.exists(filepath) or not os.access(filepath, os.R_OK):
         print(f"Error: The file '{filepath}' cannot be accessed or does not exist.")
         sys.exit(1)
-        
-     #use tokentizer class to split all token and explain   
+
+     #use tokentizer class to split all token and explain
     file_tokens= Tokenizers.tokenize_file(filepath)
     with open(filepath, 'r') as file:
         code = file.read()
-        
+
     parser = Parser()
     tree, error_details = parser.parse_code(code)
 
     if error_details:
         print(f"Syntax Error on Line {error_details['lineno']}: {error_details['error']}")
         print(f"Error at text: '{error_details['line']}'")
-        
+
     print("Token explanations:")
     for token in file_tokens:
         token_id, token_type, token_value = Tokenizers.explain_token(token)
         print(f"ID= {str(token_id):<10s} Type= {token_type:>8s}  '{token_value}'")
-    
+
     fileAnalyze = PythonInterpreter(filepath)
     fileAnalyze.analyze()
-    fileAnalyze.execute() 
+    fileAnalyze.execute()
 
 
 if __name__ == "__main__":
     main()
-
-
-
