@@ -1,8 +1,6 @@
 import re
 import sys
 import tokenize
-import subprocess
-import os
 
 INTEGER = 'INTEGER'
 PLUS = 'PLUS'
@@ -49,6 +47,10 @@ class Tokenizers:
         (r':', COLON),            # Colon
         (Number, 'NUMBER'),       # Number
         (r'[a-zA-Z_][a-zA-Z0-9_]*', 'ID'),  # Identifiers
+        (r',', 'COMMA'),            # Handle commas
+        (r'[a-zA-Z_][a-zA-Z0-9_]*\s*(?=\()', 'FUNCTION'),  # Function name followed by an opening parenthesis
+        (r'!=', 'NOT_EQUAL'),            # Not equal operator
+
         # Add more token patterns for other symbols and characters
     ]
 
@@ -57,22 +59,21 @@ class Tokenizers:
             tokens = list(tokenize.tokenize(file.readline))
         return tokens
 
-    @staticmethod
     def tokenize_expr(expr):
         tokens = []
-        expr = expr.strip()  # handling whitespaces
+        expr = expr.replace(" ", "")  # Remove whitespace
+
+        # Tokenize the expression using regular expressions
         while expr:
             matched = False
             for pattern, token_type in Tokenizers.token_patterns:
                 match = re.match(pattern, expr)
                 if match:
-                    if token_type != 'WHITESPACE':  # Ignore whitespace tokens
-                        tokens.append((token_type, match.group()))
+                    tokens.append((token_type, match.group()))
                     expr = expr[match.end():]
                     matched = True
                     break
             if not matched:
-                print(f"Unmatched expression: {expr}")  # Improved error message
                 raise ValueError(f"Invalid token: {expr[0]}")
         return tokens
     
