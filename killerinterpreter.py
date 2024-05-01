@@ -94,8 +94,9 @@ class PythonInterpreter:
         code = self.read_code()
         lexer = Lexer()
         tokens = lexer.tokenize_code(code)
-
         parser = Parser()
+        #for token in tokens:
+            #print (token)
         tree, error_details = parser.parse_code(code)
         if tree is not None:
             ##print("\nAST successfully generated.\n")
